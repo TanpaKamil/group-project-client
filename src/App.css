@@ -39,4 +39,68 @@
 
 .read-the-docs {
   color: #888;
-} */
+}
+
+.zoo-room {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.animal-section {
+  margin-bottom: 20px;
+}
+
+.animal-states {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.interaction-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.interaction-buttons button {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.messages {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.message {
+  margin-bottom: 5px;
+}
+
+.message.system {
+  color: #666;
+  font-style: italic;
+}
+
+.visitors-section {
+  margin: 20px 0;
+}
+
+.visitors-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.chat-section form {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-section input {
+  flex: 1;
+  padding: 5px;
+}
