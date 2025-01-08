@@ -4,20 +4,21 @@ import Swal from "sweetalert2";
 import text from "../assets/Ragunan_Online-removebg-preview.png";
 
 export default function Login() {
+
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
 
   useEffect(() => {
-    if (localStorage.username) {
+    if (localStorage.visitorName) {
       navigate("/");
     }
   }, []);
 
   function handleSubmit(e) {
     e.preventDefault();
-    localStorage.setItem("username", username);
+    localStorage.setItem("visitorName", username.trim());
     Swal.fire({
-      title: `Selamat Datang ${localStorage.username}`,
+      title: `Selamat Datang ${localStorage.visitorName}`,
       icon: "success",
     });
     navigate("/");

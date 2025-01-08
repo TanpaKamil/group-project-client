@@ -7,7 +7,7 @@ export default function Navbar() {
   function handleKeluar(e) {
     e.preventDefault();
     Swal.fire({
-      title: `Kamu mau pulang ${localStorage.username} ?`,
+      title: `Kamu mau pulang ${localStorage.vistorName} ?`,
       text: "Jangan nyesel loh ya !",
       icon: "warning",
       showCancelButton: true,
@@ -17,7 +17,7 @@ export default function Navbar() {
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: `Hati-hati dijalan ${localStorage.username}`,
+          title: `Hati-hati dijalan ${localStorage.vistorName}`,
           icon: "success"
         });
         localStorage.clear();

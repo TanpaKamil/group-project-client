@@ -39,7 +39,7 @@ function ZooRoom() {
         newSocket.on('interaction_event', (event) => {
             setMessages(prev => [...prev, {
                 type: 'system',
-                message: `${event.user} ${event.action} the animal!`
+                message: `${visitorName} ${event.action} the animal!`
             }])
         })
 
@@ -55,6 +55,7 @@ function ZooRoom() {
             newSocket.close()
         }
     }, [visitorName])
+    
 
     // Handle animal interactions
     const handleInteraction = (action) => {
