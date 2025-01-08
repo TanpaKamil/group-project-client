@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import text from "../assets/Ragunan_Online-removebg-preview.png";
+import text from "../assets/newBg.png";
 import { UserContext } from "../contexts/UserContext";
 
 export default function Login() {
@@ -82,7 +82,7 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className="w-full rounded-lg bg-[#6A994E] px-6 py-3 text-lg font-medium text-white shadow-md transform hover:scale-105 hover:shadow-lg transition-all duration-300"
+            className="w-full rounded-lg bg-[#5DB996] px-6 py-3 text-lg font-medium text-white shadow-md transform hover:scale-105 hover:shadow-lg transition-all duration-300"
             disabled={!username.trim()}
           >
             Get Started

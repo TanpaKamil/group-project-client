@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import logo from "../assets/home logo.png";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -8,18 +9,17 @@ export default function Navbar() {
     e.preventDefault();
     Swal.fire({
 
-      title: `Kamu mau pulang ${localStorage.visitorName} ?`,
-      text: "Jangan nyesel loh ya !",
-
+      title: `Are you sure ${localStorage.visitorName} ?`,
+      text: "Don't regret it !",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Iya, mau pulang!"
+      confirmButtonText: "Yes, i wanna go home !",
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: `Hati-hati dijalan ${localStorage.vistorName}`,
+          title: `See you ${localStorage.visitorName}`,
           icon: "success"
         });
         localStorage.clear();
@@ -33,21 +33,13 @@ export default function Navbar() {
       <div
         className="relative navbar text-base-100 z-50 shadow-lg"
         style={{
-          background: "linear-gradient(90deg, #3E7B27, #5FAF40)",
+          background: "linear-gradient(90deg, #16C47F, #5DB996)",
           color: "#F5EFE6",
         }}
       >
         <div className="navbar-start"></div>
         <div className="navbar-center">
-          <button
-            className="btn btn-ghost text-4xl font-bold tracking-wide"
-            style={{
-              color: "#F5EFE6",
-              textShadow: "2px 2px 4px rgba(0,0,0,0.4)",
-            }}
-          >
-            RAGUNAN ONLINE
-          </button>
+        <img className="w-96" src={logo} />
         </div>
         <div className="navbar-end">
           <button
@@ -58,7 +50,7 @@ export default function Navbar() {
               border: "2px solid #3E7B27",
             }}
           >
-            PULANG
+            GO HOME
           </button>
         </div>
       </div>
