@@ -1,30 +1,35 @@
-function animateEat(setPosX, setPosY) {
-    function backToIdle() {
-      let back = setInterval(() => {
-        setPosX((x) => {
-          if (x >= 310) {
-            clearInterval(back);
-            return 340;
-          } else {
-            return x + 10;
-          }
-        });
-      }, 75);
-    }
+let eatAnimationInProgress = false;
+
+export default function animateEat(setPosX, setPosY) {
+  if (eatAnimationInProgress) return;
+  eatAnimationInProgress = true;
+
+  // Store original position
+  let originalX = 340;
   
-    let id = setInterval(() => {
+  function backToIdle() {
+    let back = setInterval(() => {
       setPosX((x) => {
-        if (x <= 75) {
-          clearInterval(id);
-          setTimeout(backToIdle, 3200);
-          return 75;
+        if (x >= originalX) {
+          clearInterval(back);
+          eatAnimationInProgress = false;
+          return originalX;
         } else {
-          console.log(x);
-          return x - 10;
+          return x + 10;
         }
       });
     }, 75);
   }
-  
-  export default animateEat;
-  
+
+  let id = setInterval(() => {
+    setPosX((x) => {
+      if (x <= 75) {
+        clearInterval(id);
+        setTimeout(backToIdle, 3200);
+        return 75;
+      } else {
+        return x - 10;
+      }
+    });
+  }, 75);
+}
