@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { User, Send, Phone, Video } from "lucide-react";
+import io from 'socket.io-client'
 
 export default function Chat() {
+  
+
   return (
     <div className="w-[540px] flex flex-col justify-between h-full">
       <div className="top-0 p-4 bg-[#5CB338]">
@@ -57,6 +60,7 @@ export default function Chat() {
             <Send className="h-5 w-5" />
           </button>
         </div>
+
         {/* Connection Status */}
         <div className="text-center mt-2">
           <span className="text-xs text-neutral-content">
