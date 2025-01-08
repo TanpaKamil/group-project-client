@@ -8,19 +8,22 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 
 import { CoordinateProvider } from "./contexts/CoordinateContext";
+import { UserProvider } from "./contexts/UserContext";
 
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <CoordinateProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
+        <UserProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
 
-          <Route element={<Authentication />}>
-            <Route path="/" element={<Home />} />
-          </Route>
-        </Routes>
+            <Route element={<Authentication />}>
+              <Route path="/" element={<Home />} />
+            </Route>
+          </Routes>
+        </UserProvider>
       </CoordinateProvider>
     </BrowserRouter>
   </StrictMode>
