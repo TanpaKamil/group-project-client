@@ -3,7 +3,9 @@ import io from 'socket.io-client'
 
 const SOCKET_URL = 'http://localhost:3000'
 
-function ZooRoom({ visitorName }) {
+// { visitorName }
+function ZooRoom() {
+    const visitorName = localStorage.visitorName
     const [socket, setSocket] = useState(null)
     const [animalState, setAnimalState] = useState(null)
     const [visitors, setVisitors] = useState([])

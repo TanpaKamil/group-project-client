@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import App from "./App";
 
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>

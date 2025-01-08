@@ -10,7 +10,7 @@ const SOCKET_URL = "http://localhost:3000";
 
 export default function Games({ visitorName }) {
   const [socket, setSocket] = useState(null);
-  const [animalState, setAnimalState] = useState(null);
+  const [animalState, setAnimalState] = useState({});
   const [visitors, setVisitors] = useState([]);
   const [interactionError, setInteractionError] = useState("");
   const [posX, setPosX] = useState(340);
@@ -44,30 +44,55 @@ export default function Games({ visitorName }) {
   const handleInteraction = (action) => {
     socket?.emit("interact_animal", action);
 
-    if (action === "feed") {
+    // if (action === "feed") {
+    //   animateEat(setPosX, setPosY);
+    // }
+
+    // if (action === "feed") {
+    //   animateEat(setPosX, setPosY);
+    // }
+
+    // if (action === "wash") {
+    //   setWash("wash");
+    //   setTimeout(() => {
+    //     setWash("");
+    //   }, 4000);
+    // }
+
+    // if (action === "clean") {
+    //     setClean("clean");
+    //   animatePoop(setPosX);
+
+    //   setTimeout(() => {
+    //     setClean("");
+    //   }, 4000);
+    // }
+  };
+
+  useEffect(() => {
+    if (animalState.isHungry === false) {
       animateEat(setPosX, setPosY);
     }
+  }, [animalState.isHungry]);
 
-    if (action === "feed") {
-      animateEat(setPosX, setPosY);
-    }
-
-    if (action === "wash") {
+  useEffect(() => {
+    if (animalState.isDirty === false) {
       setWash("wash");
       setTimeout(() => {
         setWash("");
       }, 4000);
     }
+  }, [animalState.isDirty]);
 
-    if (action === "clean") {
-        setClean("clean");
+  useEffect(() => {
+    if (animalState.hasWaste === false) {
+      setClean("clean");
       animatePoop(setPosX);
-
       setTimeout(() => {
         setClean("");
       }, 4000);
     }
-  };
+  }, [animalState.hasWaste]);
 
   if (!animalState) return <div>Loading...</div>;
 
@@ -127,13 +152,7 @@ export default function Games({ visitorName }) {
             </div>
 
             {/* Clean Poop Anim*/}
-            <div
-              className={
-                clean === "clean"
-                  ? ""
-                  : "hidden"
-              }
-            >
+            <div className={clean === "clean" ? "" : "hidden"}>
               <img
                 className="absolute top-[175px] left-[360px] w-28 h-28 rounded-lg"
                 src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExdW16Znd2bnFjdWFxcHEyZXc4c2JienZtNXUwZXVwcDdpNDRidDY0dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/10U6IGiO7SKcslm7SD/giphy.webp"
