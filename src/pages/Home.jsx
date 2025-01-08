@@ -1,13 +1,19 @@
+import Games from "../Components/Games";
+import Chat from "../Components/Chat";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
-import Chat from "../Components/Chat"
 
-export default function Home(){
 
-    return(
-        <div>
-            <Chat/>
-        </div>
-    
-    )
-
+export default function Home() {
+  return (
+    <div className="h-screen w-screen">
+      <Navbar />
+      <div className="flex overflow-y-auto h-5/6">
+        <Chat />
+        <Games />
+      </div>
+        <Footer />
+    </div>
+  );
 }

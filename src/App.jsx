@@ -13,7 +13,7 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="">
       {!isJoined ? (
         <LandingPage onJoin={handleJoin} />
       ) : (

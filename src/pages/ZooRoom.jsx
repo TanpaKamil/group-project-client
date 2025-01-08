@@ -57,6 +57,7 @@ function ZooRoom({ visitorName }) {
     // Handle animal interactions
     const handleInteraction = (action) => {
         socket?.emit('interact_animal', action)
+        
     }
 
     // Handle chat message submission
