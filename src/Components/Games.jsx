@@ -2,11 +2,13 @@ import gif from "../assets/cartoon network bear Sticker - Find & Share on GIPHY.
 import poop from "../assets/poop.png";
 import drink from '../assets/glassDrink.gif'
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import io from "socket.io-client";
 import animateEat from "../helpers/animationEat";
 import animatePoop from "../helpers/animationPoop";
 import animateDrunk from "../helpers/animationDrunk";
+
+import { CoordinateContext } from "../contexts/CoordinateContext";
 
 
 const SOCKET_URL = "http://localhost:3000";
@@ -14,13 +16,10 @@ const SOCKET_URL = "http://localhost:3000";
 export default function Games({ visitorName }) {
   const [socket, setSocket] = useState(null);
   const [animalState, setAnimalState] = useState({});
-  const [visitors, setVisitors] = useState([]);
-  const [interactionError, setInteractionError] = useState("");
-  const [posX, setPosX] = useState(340);
-  const [posY, setPosY] = useState(180);
   const [wash, setWash] = useState("");
   const [clean, setClean] = useState("");
-
+  const {posX, posY, setPosX, setPosY} = useContext(CoordinateContext)
+  
   // Connect to socket when component mounts
   useEffect(() => {
     const newSocket = io(SOCKET_URL);
@@ -46,57 +45,34 @@ export default function Games({ visitorName }) {
   // Handle animal interactions
   const handleInteraction = (action) => {
     socket?.emit("interact_animal", action);
-
-    // if (action === "feed") {
-    //   animateEat(setPosX, setPosY);
-    // }
-
-    // if (action === "feed") {
-    //   animateEat(setPosX, setPosY);
-    // }
-
-    // if (action === "wash") {
-    //   setWash("wash");
-    //   setTimeout(() => {
-    //     setWash("");
-    //   }, 4000);
-    // }
-
-    // if (action === "clean") {
-    //     setClean("clean");
-    //   animatePoop(setPosX);
-
-    //   setTimeout(() => {
-    //     setClean("");
-    //   }, 4000);
-    // }
   };
 
 
-    if (action === "drink") {
-      animateDrunk(setPosX, setPosY);
-
-    }
-  }, [animalState.isHungry]);
-
   useEffect(() => {
+
+    if (animalState.isHungry === false) {
+      animateEat(setPosX, setPosY);
+    }
+
+    if (animalState.isThirsty === false) {
+      animateDrunk(setPosX, setPosY);
+    }
+
     if (animalState.isDirty === false) {
       setWash("wash");
       setTimeout(() => {
         setWash("");
       }, 4000);
     }
-  }, [animalState.isDirty]);
 
-    if (action === "clean") {
-
+    if (animalState.hasWaste === false) {
       setClean("clean");
       animatePoop(setPosX);
       setTimeout(() => {
         setClean("");
       }, 4000);
     }
-  }, [animalState.hasWaste]);
+  }, [animalState]);
 
   if (!animalState) return <div>Loading...</div>;
 
