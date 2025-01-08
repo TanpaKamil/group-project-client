@@ -1,26 +1,31 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 import text from "../assets/Ragunan_Online-removebg-preview.png";
 
 export default function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
 
-  useEffect(()=>{
-    if(localStorage.username){
-        navigate('/')
+  useEffect(() => {
+    if (localStorage.username) {
+      navigate("/");
     }
-  },[])
+  }, []);
 
   function handleSubmit(e) {
     e.preventDefault();
     localStorage.setItem("username", username);
+    Swal.fire({
+      title: `Selamat Datang ${localStorage.username}`,
+      icon: "success",
+    });
     navigate("/");
   }
 
   return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5EFE6] p-6">
-        <img className="mb-5" src={text} alt="Logo" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5EFE6] p-6">
+      <img className="mb-5" src={text} alt="Logo" />
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
         <p className="text-[#A5A58D] text-center mb-6">
           Please enter your username

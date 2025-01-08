@@ -15,9 +15,9 @@ createRoot(document.getElementById("root")).render(
         <Route path="/login" element={<Login />} />
         <Route path="/template" element={<App />} />
 
-        <Route element={<Authentication />}></Route>
-
-        <Route path="/" element={<Home />} />
+        <Route element={<Authentication />}>
+          <Route path="/" element={<Home />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </StrictMode>
