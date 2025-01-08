@@ -1,26 +1,46 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import text from "../assets/Ragunan_Online-removebg-preview.png";
+import { UserContext } from "../contexts/UserContext";
 
 export default function Login() {
-
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+  const { visitorName, setVisitorName, setSessionId } = useContext(UserContext);
 
   useEffect(() => {
-    if (localStorage.visitorName) {
+    // Check if user is already logged in
+    if (visitorName) {
       navigate("/");
     }
-  }, []);
+  }, [visitorName, navigate]);
 
   function handleSubmit(e) {
     e.preventDefault();
-    localStorage.setItem("visitorName", username.trim());
+    
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Please enter a username',
+        icon: 'error',
+      });
+      return;
+    }
+
+    // Generate a new session ID
+    const newSessionId = Date.now().toString(36) + Math.random().toString(36).substring(2);
+    
+    // Update context (which will also update localStorage)
+    setVisitorName(trimmedUsername);
+    setSessionId(newSessionId);
+
     Swal.fire({
-      title: `Selamat Datang ${localStorage.visitorName}`,
+      title: `Selamat Datang ${trimmedUsername}`,
       icon: "success",
     });
+
     navigate("/");
   }
 
@@ -38,6 +58,10 @@ export default function Login() {
               type="text"
               className="w-full rounded-lg border border-[#A5A58D] p-4 text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#6A994E] focus:border-[#6A994E] transition"
               placeholder="Username"
+              value={username}
+              autoFocus
+              maxLength={20}
+              required
             />
             <span className="absolute inset-y-0 right-4 flex items-center">
               <svg
@@ -56,10 +80,10 @@ export default function Login() {
               </svg>
             </span>
           </div>
-
           <button
             type="submit"
             className="w-full rounded-lg bg-[#6A994E] px-6 py-3 text-lg font-medium text-white shadow-md transform hover:scale-105 hover:shadow-lg transition-all duration-300"
+            disabled={!username.trim()}
           >
             Get Started
           </button>

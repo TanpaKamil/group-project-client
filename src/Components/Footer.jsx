@@ -6,8 +6,7 @@ export default function Footer() {
 
         <aside>
           <p style={{color:"F5EFE6"}}>
-            Copyright © {new Date().getFullYear()} - All right reserved by ACME
-            Industries Ltd
+            Copyright © {new Date().getFullYear()} by Oki, Dika, Dimas, Hongkim HCK78
           </p>
         </aside>
       </footer>
