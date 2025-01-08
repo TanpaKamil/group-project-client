@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <>
 
-      <footer className="bottom-0 relative footer footer-center  text-base-100 h-[78px] z-50 bg-[#3E7B27]">
+      <footer className="bottom-0 relative footer footer-center  text-base-100 h-[78px] z-50 " style={{background: "linear-gradient(90deg, #16C47F, #5DB996)",}}>
 
         <aside>
           <p style={{color:"F5EFE6"}}>
