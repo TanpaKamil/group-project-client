@@ -8,7 +8,7 @@ export default function Navbar() {
     e.preventDefault();
     Swal.fire({
 
-      title: `Kamu mau pulang ${localStorage.vistorName} ?`,
+      title: `Kamu mau pulang ${localStorage.visitorName} ?`,
       text: "Jangan nyesel loh ya !",
 
       icon: "warning",

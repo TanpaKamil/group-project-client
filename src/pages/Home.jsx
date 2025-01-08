@@ -1,7 +1,7 @@
-import Games from "../Components/Games";
-import Chat from "../Components/Chat";
-import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
+import Games from "../components/Games";
+import Chat from "../components/Chat";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function Home() {
 
