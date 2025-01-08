@@ -72,12 +72,14 @@ export default function Games({ visitorName }) {
   if (!animalState) return <div>Loading...</div>;
 
   return (
+    <>
     <div className="flex w-[720px] lg:w-full">
       {/* Main Content */}
       <div
-        className="w-full flex flex-col items-center bg-neutral-content"
-        // style={{ backgroundColor: "#D4F6FF" }}
+        className="w-full flex flex-col items-center "
+        // style={{ backgroundColor: "#F5EFE6" }}
       >
+      
         {/* <div className="relative"> */}
         {/* Animal Activity Status */}
         <div
@@ -202,5 +204,6 @@ export default function Games({ visitorName }) {
         </div>
       </div>
     </div>
+    </>
   );
 }
