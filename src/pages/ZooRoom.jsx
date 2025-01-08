@@ -3,7 +3,9 @@ import io from 'socket.io-client'
 
 const SOCKET_URL = 'http://localhost:3000'
 
-function ZooRoom({ visitorName }) {
+// { visitorName }
+function ZooRoom() {
+    const visitorName = localStorage.visitorName
     const [socket, setSocket] = useState(null)
     const [animalState, setAnimalState] = useState(null)
     const [visitors, setVisitors] = useState([])
@@ -37,7 +39,7 @@ function ZooRoom({ visitorName }) {
         newSocket.on('interaction_event', (event) => {
             setMessages(prev => [...prev, {
                 type: 'system',
-                message: `${event.user} ${event.action} the animal!`
+                message: `${visitorName} ${event.action} the animal!`
             }])
         })
 
@@ -53,6 +55,7 @@ function ZooRoom({ visitorName }) {
             newSocket.close()
         }
     }, [visitorName])
+    
 
     // Handle animal interactions
     const handleInteraction = (action) => {

@@ -13,7 +13,7 @@ const SOCKET_URL = "http://localhost:3000";
 
 export default function Games({ visitorName }) {
   const [socket, setSocket] = useState(null);
-  const [animalState, setAnimalState] = useState(null);
+  const [animalState, setAnimalState] = useState({});
   const [visitors, setVisitors] = useState([]);
   const [interactionError, setInteractionError] = useState("");
   const [posX, setPosX] = useState(340);
@@ -47,30 +47,56 @@ export default function Games({ visitorName }) {
   const handleInteraction = (action) => {
     socket?.emit("interact_animal", action);
 
-    if (action === "feed") {
-      animateEat(setPosX, setPosY);
-    }
+    // if (action === "feed") {
+    //   animateEat(setPosX, setPosY);
+    // }
+
+    // if (action === "feed") {
+    //   animateEat(setPosX, setPosY);
+    // }
+
+    // if (action === "wash") {
+    //   setWash("wash");
+    //   setTimeout(() => {
+    //     setWash("");
+    //   }, 4000);
+    // }
+
+    // if (action === "clean") {
+    //     setClean("clean");
+    //   animatePoop(setPosX);
+
+    //   setTimeout(() => {
+    //     setClean("");
+    //   }, 4000);
+    // }
+  };
+
 
     if (action === "drink") {
       animateDrunk(setPosX, setPosY);
-    }
 
-    if (action === "wash") {
+    }
+  }, [animalState.isHungry]);
+
+  useEffect(() => {
+    if (animalState.isDirty === false) {
       setWash("wash");
       setTimeout(() => {
         setWash("");
       }, 4000);
     }
+  }, [animalState.isDirty]);
 
     if (action === "clean") {
+
       setClean("clean");
       animatePoop(setPosX);
-
       setTimeout(() => {
         setClean("");
       }, 4000);
     }
-  };
+  }, [animalState.hasWaste]);
 
   if (!animalState) return <div>Loading...</div>;
 
@@ -131,6 +157,7 @@ export default function Games({ visitorName }) {
                   alt="poop"
                 />
               </div>
+
 
               {/* Clean Poop Anim*/}
               <div className={clean === "clean" ? "" : "hidden"}>
