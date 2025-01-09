@@ -1,5 +1,4 @@
 import { useEffect, useState, useContext, useRef } from "react";
-import io from "socket.io-client";
 import Swal from "sweetalert2";
 import gif from "../assets/cartoon network bear Sticker - Find & Share on GIPHY.gif";
 import poop from "../assets/poop.png";
@@ -11,8 +10,8 @@ import animateEat from "../helpers/animationEat";
 import animatePoop from "../helpers/animationPoop";
 import animateDrunk from "../helpers/animationDrunk";
 import ReactAudioPlayer from "react-audio-player";
+import socketService from "../services/socketService";
 
-const SOCKET_URL = "https://xazerly.biz.id";
 const ANIMATION_DURATION = 4000;
 
 const Toast = Swal.mixin({
@@ -28,10 +27,16 @@ const Toast = Swal.mixin({
 });
 
 export default function Games() {
-  const { visitorName, sessionId } = useContext(UserContext);
+  const { visitorName, isConnected } = useContext(UserContext);
   const { posX, posY, setPosX, setPosY } = useContext(CoordinateContext);
-  const [socket, setSocket] = useState(null);
-  const [animalState, setAnimalState] = useState({});
+  const [animalState, setAnimalState] = useState({
+    isHungry: true,
+    isThirsty: true,
+    isDirty: true,
+    hasWaste: true,
+    isBusy: false,
+    currentActivity: null
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [activeAnimation, setActiveAnimation] = useState(null);
 
@@ -47,12 +52,10 @@ export default function Games() {
       return;
     }
 
-    // Get next animation from queue
     const nextAnimation = animationQueueRef.current.shift();
     isAnimatingRef.current = true;
     setActiveAnimation(nextAnimation);
 
-    // Handle animation based on type
     switch (nextAnimation) {
       case "eat":
         animateEat(setPosX, setPosY);
@@ -68,26 +71,21 @@ export default function Games() {
         break;
     }
 
-    // Set timeout to clear animation
     timeoutRef.current = setTimeout(() => {
       setActiveAnimation(null);
-      // Process next animation after current one finishes
       setTimeout(() => {
         processNextAnimation();
-      }, 100); // Small delay between animations
+      }, 100);
     }, ANIMATION_DURATION);
   };
 
-  // Queue a new animation
   const queueAnimation = (animationType) => {
     animationQueueRef.current.push(animationType);
-
     if (!isAnimatingRef.current) {
       processNextAnimation();
     }
   };
 
-  // Clean up all animations and timeouts
   const cleanupAnimations = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -95,31 +93,22 @@ export default function Games() {
     animationQueueRef.current = [];
     isAnimatingRef.current = false;
     setActiveAnimation(null);
-    // Reset positions
     setPosX(340);
     setPosY(200);
   };
 
-  // Socket connection setup
+  // Setup socket listeners
   useEffect(() => {
-    if (!visitorName || !sessionId) return;
+    if (!visitorName) return;
 
-    const newSocket = io(SOCKET_URL);
-    setSocket(newSocket);
-
-    newSocket.on("connect", () => {
-      console.log("Socket connected");
-      newSocket.emit("join_room", { visitorName, sessionId });
-    });
-
-    newSocket.on("animal_state_update", (state) => {
+    socketService.on("animal_state_update", (state) => {
       setAnimalState(state);
       if (!state.isBusy) {
         setIsLoading(false);
       }
     });
 
-    newSocket.on("interaction_failed", (message) => {
+    socketService.on("interaction_failed", (message) => {
       Toast.fire({
         icon: "error",
         title: message,
@@ -127,13 +116,17 @@ export default function Games() {
       setIsLoading(false);
     });
 
+    // Request initial state
+    socketService.emit("request_animal_state");
+
     return () => {
       cleanupAnimations();
-      newSocket.close();
+      socketService.off("animal_state_update");
+      socketService.off("interaction_failed");
     };
-  }, [visitorName, sessionId]);
+  }, [visitorName]);
 
-  // Track which animations have played for each state change
+  // Track which animations have played
   const animatedStatesRef = useRef({
     isHungry: true,
     isThirsty: true,
@@ -145,7 +138,6 @@ export default function Games() {
   useEffect(() => {
     if (!animalState) return;
 
-    // Helper to check if we need to animate this state change
     const shouldAnimate = (stateKey, currentValue) => {
       if (animatedStatesRef.current[stateKey] !== currentValue) {
         animatedStatesRef.current[stateKey] = currentValue;
@@ -185,16 +177,16 @@ export default function Games() {
   }, []);
 
   const handleInteraction = async (action) => {
-    if (!socket || animalState.isBusy) {
+    if (!isConnected || animalState.isBusy) {
       Toast.fire({
         icon: "warning",
-        title: "Please wait for current action to complete",
+        title: animalState.isBusy ? "Please wait for current action to complete" : "Not connected to server",
       });
       return;
     }
 
     setIsLoading(true);
-    socket.emit("interact_animal", action);
+    socketService.emit("interact_animal", action);
   };
 
   if (!animalState) return null;
@@ -210,16 +202,17 @@ export default function Games() {
             </div>
           )}
 
+          {/* Connection Status */}
+          {!isConnected && (
+            <div className="fixed top-20 left-4 z-50 bg-yellow-100 text-yellow-700 px-4 py-2 rounded-md">
+              Reconnecting to server...
+            </div>
+          )}
+
           {/* Animal Status */}
-          <div
-            className={
-              animalState.isBusy ? "text-error" : "text-success-content"
-            }
-          >
+          <div className={animalState.isBusy ? "text-error" : "text-success-content"}>
             <p className="text-center font-semibold mt-6 text-2xl mr-20">
-              {animalState.isBusy
-                ? "I'm Busy !"
-                : `Hello ${localStorage.visitorName}`}
+              {animalState.isBusy ? "I'm Busy!" : `Hello ${visitorName}`}
             </p>
           </div>
 
@@ -313,26 +306,27 @@ export default function Games() {
                 { action: "drink", icon: "🥛" },
                 { action: "wash", icon: "🧼" },
                 { action: "clean", icon: "💩" },
-              ].map(({ action, label, icon }) => (
+              ].map(({ action, icon }) => (
                 <button
                   key={action}
                   onClick={() => handleInteraction(action)}
-                  disabled={animalState.isBusy}
+                  disabled={!isConnected || animalState.isBusy}
                   className="size-16 bg-gradient-to-r from-[#3E7B27] to-[#5DB996] hover:from-[#3E7B27] hover:to-[#5DB996] text-white rounded-full shadow-lg flex items-center justify-center transform transition-transform duration-300 ease-in-out hover:scale-105 disabled:opacity-50 disabled:pointer-events-none"
                 >
-                  <span className="text-4xl ">{icon}</span>
-                  <span className="font-semibold text-lg">{label}</span>
+                  <span className="text-4xl">{icon}</span>
                 </button>
               ))}
             </div>
           </div>
-          <div className="game-container">
+
+          {/* Background Music */}
+          <div className="game-container mt-4">
             <ReactAudioPlayer
               src={bgMusic}
               autoPlay
               controls
               loop
-              volume={0.1} // Atur volume awal
+              volume={0.1}
             />
           </div>
         </div>

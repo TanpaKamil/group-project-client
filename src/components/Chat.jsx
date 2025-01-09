@@ -1,71 +1,20 @@
 import { useEffect, useState, useContext } from "react";
 import { Send } from "lucide-react";
-import io from "socket.io-client";
 import MessageUser from "./MessageUser";
 import MessageOthers from "./MessageOthers";
-import { UserContext } from "../contexts/UserContext"; // We'll create this next
-
-const SOCKET_URL = "https://xazerly.biz.id";
-
-// Generate a unique session ID
-const generateSessionId = () => {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
-};
+import { UserContext } from "../contexts/UserContext";
+import socketService from "../services/socketService";
 
 export default function Chat() {
-  const { visitorName, sessionId, setSessionId } = useContext(UserContext);
-  const [socket, setSocket] = useState(null);
+  const { visitorName, isConnected } = useContext(UserContext);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [connectionStatus, setConnectionStatus] = useState("connecting");
 
   useEffect(() => {
-    if (!visitorName) return; // Don't connect if no visitor name
+    if (!visitorName) return;
 
-    const newSocket = io(SOCKET_URL);
-    setSocket(newSocket);
-
-    // Generate or retrieve session ID
-    const currentSessionId = sessionId || generateSessionId();
-    if (!sessionId) {
-      setSessionId(currentSessionId);
-    }
-
-    // Socket connection handlers
-    newSocket.on("connect", () => {
-      setConnectionStatus("connected");
-      console.log("Socket connected, joining with:", {
-        visitorName,
-        sessionId: currentSessionId,
-      });
-
-      // Join room with visitor data
-      newSocket.emit("join_room", {
-        visitorName,
-        sessionId: currentSessionId,
-      });
-    });
-
-    newSocket.on("disconnect", () => {
-      setConnectionStatus("disconnected");
-    });
-
-    // Attempt to restore session if reconnecting
-    newSocket.on("connect_error", () => {
-      setConnectionStatus("error");
-      if (currentSessionId) {
-        newSocket.emit("reconnect_session", currentSessionId);
-      }
-    });
-
-    // Session restoration handler
-    newSocket.on("session_restored", (userData) => {
-      console.log("Session restored:", userData);
-      setConnectionStatus("connected");
-    });
-
-    // Message handlers
-    newSocket.on("chat_message", (message) => {
+    // Set up message handlers
+    socketService.on("chat_message", (message) => {
       setMessages((prev) => [...prev, message]);
       // Auto-scroll to latest message
       setTimeout(() => {
@@ -76,8 +25,7 @@ export default function Chat() {
       }, 100);
     });
 
-    newSocket.on("interaction_event", (event) => {
-      console.log("Received interaction event:", event);
+    socketService.on("interaction_event", (event) => {
       setMessages((prev) => [
         ...prev,
         {
@@ -87,17 +35,18 @@ export default function Chat() {
       ]);
     });
 
-    // Cleanup on unmount
+    // Cleanup
     return () => {
-      newSocket.close();
+      socketService.off("chat_message");
+      socketService.off("interaction_event");
     };
-  }, [visitorName, sessionId]);
+  }, [visitorName]);
 
   // Handle chat message submission
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (newMessage.trim() && socket && connectionStatus === "connected") {
-      socket.emit("send_message", newMessage.trim());
+    if (newMessage.trim() && isConnected) {
+      socketService.emit("send_message", newMessage.trim());
       setNewMessage("");
     }
   };
@@ -121,19 +70,11 @@ export default function Chat() {
           <div className="flex items-center gap-2">
             <div
               className={`badge ${
-                connectionStatus === "connected"
-                  ? "badge-success"
-                  : connectionStatus === "connecting"
-                  ? "badge-warning"
-                  : "badge-error"
+                isConnected ? "badge-success" : "badge-error"
               }`}
             >
               <p className="text-info-content">
-                {connectionStatus === "connected"
-                  ? "Online"
-                  : connectionStatus === "connecting"
-                  ? "Connecting..."
-                  : "Offline"}
+                {isConnected ? "Online" : "Offline"}
               </p>
             </div>
             <span className="text-sm text-gray-300">
@@ -173,16 +114,14 @@ export default function Chat() {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            disabled={connectionStatus !== "connected"}
+            disabled={!isConnected}
           ></textarea>
           <button
             type="submit"
             className={`btn btn-circle ${
-              connectionStatus === "connected"
-                ? "bg-[#16C47F] hover:bg-[#5DB996]"
-                : "bg-gray-400"
+              isConnected ? "bg-[#16C47F] hover:bg-[#5DB996]" : "bg-gray-400"
             }`}
-            disabled={connectionStatus !== "connected"}
+            disabled={!isConnected}
           >
             <Send className="h-5 w-5" />
           </button>
@@ -193,18 +132,10 @@ export default function Chat() {
           <span className="text-xs text-neutral-content">
             <span
               className={`inline-block w-2 h-2 rounded-full mr-1 ${
-                connectionStatus === "connected"
-                  ? "bg-green-500"
-                  : connectionStatus === "connecting"
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
+                isConnected ? "bg-green-500" : "bg-red-500"
               }`}
             ></span>
-            {connectionStatus === "connected"
-              ? "Connected"
-              : connectionStatus === "connecting"
-              ? "Connecting..."
-              : "Disconnected"}
+            {isConnected ? "Connected" : "Disconnected"}
           </span>
         </div>
       </div>
