@@ -10,21 +10,19 @@ import Home from "./pages/Home";
 import { CoordinateProvider } from "./contexts/CoordinateContext";
 import { UserProvider } from "./contexts/UserContext";
 
-
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <CoordinateProvider>
-        <UserProvider>
+      <UserProvider>
+        <CoordinateProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
-
             <Route element={<Authentication />}>
               <Route path="/" element={<Home />} />
             </Route>
           </Routes>
-        </UserProvider>
-      </CoordinateProvider>
+        </CoordinateProvider>
+      </UserProvider>
     </BrowserRouter>
   </StrictMode>
 );
