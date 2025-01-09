@@ -5,7 +5,7 @@ import MessageUser from "./MessageUser";
 import MessageOthers from "./MessageOthers";
 import { UserContext } from "../contexts/UserContext"; // We'll create this next
 
-const SOCKET_URL = "http://localhost:3000";
+const SOCKET_URL = "https://xazerly.biz.id";
 
 // Generate a unique session ID
 const generateSessionId = () => {

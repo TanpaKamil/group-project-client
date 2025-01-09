@@ -12,7 +12,7 @@ import animatePoop from "../helpers/animationPoop";
 import animateDrunk from "../helpers/animationDrunk";
 import ReactAudioPlayer from "react-audio-player";
 
-const SOCKET_URL = "http://localhost:3000";
+const SOCKET_URL = "https://xazerly.biz.id";
 const ANIMATION_DURATION = 4000;
 
 const Toast = Swal.mixin({
